@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" fx:id="rootAnchorPane" focusTraversable="false" prefHeight="526.0001068115234" prefWidth="1004.0" xmlns:fx="http://javafx.com/fxml" fx:controller="BillionGraves.BillionGravesController">
+  <children>
+    <Button id="btnFileChoose" layoutX="14.0" layoutY="21.0" mnemonicParsing="false" onAction="#btnFileChooser" prefHeight="35.0" prefWidth="173.0" text="Choose File to Ingest" />
+    <TableView fx:id="tvDataPreview" layoutX="200.0" layoutY="21.0" prefHeight="492.0" prefWidth="725.0">
+      <columns>
+        <TableColumn prefWidth="75.0" text="Column X" />
+        <TableColumn prefWidth="75.0" text="Column X" />
+      </columns>
+    </TableView>
+    <Button id="btnFileChoose" fx:id="btnFileIngest" layoutX="14.0" layoutY="477.0" mnemonicParsing="false" onAction="#btnFileIngest" prefHeight="35.0" prefWidth="147.0" text="Start Data Ingest" />
+    <Label layoutX="14.0" layoutY="65.0" text="# of Rows to Preview" />
+    <ComboBox id="" fx:id="cbxRowsToPreview" layoutX="133.0" layoutY="65.0" minWidth="48.0" onAction="#cbxRowsToPreview" prefHeight="21.0" prefWidth="54.0">
+      <items>
+        <FXCollections fx:factory="observableArrayList">
+          <String fx:value="10" />
+          <String fx:value="25" />
+          <String fx:value="100" />
+          <String fx:value="200" />
+          <String fx:value="500" />
+          <String fx:value="1000" />
+        </FXCollections>
+      </items>
+    </ComboBox>
+  </children>
+</AnchorPane>
