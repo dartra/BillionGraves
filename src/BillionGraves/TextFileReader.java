@@ -29,11 +29,11 @@ public class TextFileReader {
 
     public TextFileReader(File filePath) throws IOException {//Get the column names
 
-        BufferedReader br = null;
+        BufferedReader br;
         Integer count = 0;
         String tabSplitBy = "\\t";
         String fieldNames[];
-        String recordData[];
+        String fieldData[];
         String sCurrentLine;
 
         br = new BufferedReader(new FileReader(filePath.toString()));
@@ -42,18 +42,15 @@ public class TextFileReader {
         fieldNames = sCurrentLine.split(tabSplitBy);
         columnNamesList = Arrays.asList(fieldNames);
 
-        //System.out.println(sCurrentLine + "\r\n");
         while ((sCurrentLine = br.readLine()) != null) {
             count = count + 1;
             if (count < 2) {
-                recordData = sCurrentLine.split(tabSplitBy);
+                fieldData = sCurrentLine.split(tabSplitBy);
 
-                olData = FXCollections.observableArrayList(Arrays.asList(recordData));
+                olData = FXCollections.observableArrayList(Arrays.asList(fieldData));
 
-                for (int i = 0; i < recordData.length; i++) {
-                    //System.out.println(recordData[i]);
+                for (int i = 0; i < fieldData.length; i++) {
                 }
-                //System.out.println("\r");
             }
             if (count > 1) {
                 break;
@@ -64,10 +61,10 @@ public class TextFileReader {
 
     public TextFileReader(File filePath, int rowCount) throws IOException {//get xx rows of data
 
-        BufferedReader br = null;
+        BufferedReader br;
         Integer count = 0;
         String tabSplitBy = "\\t";
-        String recordData[];
+        String fieldData[];
         String sCurrentLine;
 
         br = new BufferedReader(new FileReader(filePath.toString()));
@@ -78,16 +75,12 @@ public class TextFileReader {
             count = count + 1;
 
             if (count < rowCount + 1) {
-                recordData = sCurrentLine.split(tabSplitBy);
-                System.out.println("Count = " + count + "  >>  " + sCurrentLine);
-                olData = FXCollections.observableArrayList(Arrays.asList(recordData));
+                fieldData = sCurrentLine.split(tabSplitBy);
+                olData = FXCollections.observableArrayList(Arrays.asList(fieldData));
                 recordDataList.add(olData);
 
-                for (int i = 0; i < recordData.length; i++) {
-
-                    //System.out.println(recordData[i]);
+                for (String fieldData1 : fieldData) {
                 }
-                //System.out.println("\r");
             }
 
             if (count > rowCount) {
@@ -97,11 +90,11 @@ public class TextFileReader {
         br.close();
     }
 
-    public TextFileReader(File filePath, String data1, String dateTime) throws IOException {//get all data
-        BufferedReader br = null;
+    public TextFileReader(File filePath, String data1, String dateTime) throws IOException {//get all data for ingest and treatment
+        BufferedReader br;
         String tabSplitBy = "\\t";
         String sCurrentLine;
-        String recordData[];
+        String fieldData[];
         
         br = new BufferedReader(new FileReader(filePath.toString()));
         sCurrentLine = br.readLine();//read first line and skip it
@@ -109,7 +102,6 @@ public class TextFileReader {
 
         while ((sCurrentLine = br.readLine()) != null) {
             TreatBurialRecord doTreatments = new TreatBurialRecord(filePath, sCurrentLine, dateTime);
-
         }
         br.close();
     }

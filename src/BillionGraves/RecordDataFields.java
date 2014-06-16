@@ -7,8 +7,6 @@ package BillionGraves;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -76,33 +74,6 @@ public class RecordDataFields extends TextFileReader {
         this.cemeteryLatitude.setValue(rowData[23].toString());
         this.cemeteryLongitude.setValue(rowData[24].toString());
         this.thumbnail.setValue(rowData[25].toString());
-        
-//        System.out.println("From the SSP Class recordId = " + this.recordId.getValue());
-//        System.out.println("From the SSP Class url = " + this.url.getValue());
-//        System.out.println("From the SSP Class familyNames = " + this.familyNames.getValue());
-//        System.out.println("From the SSP Class givenNames = " + this.givenNames.getValue());
-//        System.out.println("From the SSP Class maidenNames = " + this.maidenNames.getValue());
-//        System.out.println("From the SSP Class prefix = " + this.prefix.getValue());
-//        System.out.println("From the SSP Class suffix = " + this.suffix.getValue());
-//        System.out.println("From the SSP Class birthYear = " + this.birthYear.getValue());
-//        System.out.println("From the SSP Class birthDay = " + this.birthDay.getValue());
-//        System.out.println("From the SSP Class birthMonth = " + this.birthMonth.getValue());
-//        System.out.println("From the SSP Class deathYear = " + this.deathYear.getValue());
-//        System.out.println("From the SSP Class deathDay = " + this.deathDay.getValue());
-//        System.out.println("From the SSP Class deathMonth = " + this.deathMonth.getValue());
-//        System.out.println("From the SSP Class marriageMonth = " + this.marriageMonth.getValue());
-//        System.out.println("From the SSP Class marriageYear = " + this.marriageYear.getValue());
-//        System.out.println("From the SSP Class marriageDay = " + this.marriageDay.getValue());
-//        System.out.println("From the SSP Class createdTimestamp = " + this.createdTimestamp.getValue());
-//        System.out.println("From the SSP Class updatedTimestamp = " + this.updatedTimestamp.getValue());
-//        System.out.println("From the SSP Class cemeteryName = " + this.cemeteryName.getValue());
-//        System.out.println("From the SSP Class cemeteryCity = " + this.cemeteryCity.getValue());
-//        System.out.println("From the SSP Class cemeteryState = " + this.cemeteryState.getValue());
-//        System.out.println("From the SSP Class cemeteryCounty = " + this.cemeteryCounty.getValue());
-//        System.out.println("From the SSP Class cemeteryCountry = " + this.cemeteryCountry.getValue());
-//        System.out.println("From the SSP Class cemeteryLatitude = " + this.cemeteryLatitude.getValue());
-//        System.out.println("From the SSP Class cemeteryLongitude = " + this.cemeteryLongitude.getValue());
-//        System.out.println("From the SSP Class thumbnail = " + this.thumbnail.getValue() + "\r");
     }
 
     public String getRecordId() {
@@ -416,5 +387,4 @@ public class RecordDataFields extends TextFileReader {
     public StringProperty thumbnailProperty() {
         return thumbnail;
     }
-
 }

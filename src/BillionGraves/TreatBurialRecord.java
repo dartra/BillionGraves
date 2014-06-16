@@ -7,6 +7,9 @@ package BillionGraves;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -16,13 +19,8 @@ public class TreatBurialRecord {
 
     private static final String TAB_DELIMITER = "\\t";
 
-    private final String recId;
-    private final String url;
     private final String famNames;
     private final String gnNames;
-    private final String mdnNames;
-    private final String pre;
-    private final String suf;
     private final String birYear;
     private final String birDay;
     private final String birMonth;
@@ -32,16 +30,10 @@ public class TreatBurialRecord {
     private final String marMonth;
     private final String marYear;
     private final String marDay;
-    private final String createTimestamp;
-    private final String updateTimestamp;
-    private final String cemName;
     private final String cemCity;
     private final String cemState;
     private final String cemCounty;
     private final String cemCountry;
-    private final String cemLatitude;
-    private final String cemLongitude;
-    private final String thumb;
     private final String systemTimeStamp;
 
     String monthAlpha;
@@ -56,6 +48,11 @@ public class TreatBurialRecord {
      */
     public TreatBurialRecord(File filePath, String currentLine, String timeStamp) throws IOException {
 
+        List<String> treatedData = new ArrayList<String>();//initialize array container to hold treated fields
+        for (int i = 0; i < 44; i++) {
+            treatedData.add(null);
+        }
+
         String[] recordArray = currentLine.split(TAB_DELIMITER);
 
         // Clean out the nulls before setting properties
@@ -65,19 +62,17 @@ public class TreatBurialRecord {
                 recordArray[i] = null;
             }
         }
-        // Set null date values to "0" to avoid null pointer exceptions
-        for (int i = 7; i < 16; i++) {
-            if (recordArray[i] == null) {
-                recordArray[i] = "0";
-            }
-        }
-        this.recId = recordArray[0];
-        this.url = recordArray[1];
+
+        treatedData.set(14, "Burial");//event_type
+        treatedData.set(16, "2026973");//fs_collection_id
+        treatedData.set(23, "12-0496");//ppq_id
+        treatedData.set(17, recordArray[0]);//recId -->image_id
+        treatedData.set(1, recordArray[1]);//url -->bg_url
         this.famNames = recordArray[2];
         this.gnNames = recordArray[3];
-        this.mdnNames = recordArray[4];
-        this.pre = recordArray[5];
-        this.suf = recordArray[6];
+        treatedData.set(35, recordArray[4]);//mdnNames --> pr_name_maiden
+        treatedData.set(36, recordArray[5]);//pre --> pr_name_prefix
+        treatedData.set(37, recordArray[6]);//suf --> pr_name_suffix
         this.birYear = recordArray[7];
         this.birDay = recordArray[8];
         this.birMonth = recordArray[9];
@@ -87,60 +82,76 @@ public class TreatBurialRecord {
         this.marMonth = recordArray[13];
         this.marYear = recordArray[14];
         this.marDay = recordArray[15];
-        this.createTimestamp = recordArray[16];
-        this.updateTimestamp = recordArray[17];
-        this.cemName = recordArray[18];
+        treatedData.set(9, recordArray[16]);//created_timestamp
+        treatedData.set(43, recordArray[17]);//updated_timestamp
+        treatedData.set(7, recordArray[18]);//cemName --> cemetery_name
         this.cemCity = recordArray[19];
         this.cemState = recordArray[20];
         this.cemCounty = recordArray[21];
         this.cemCountry = recordArray[22];
-        this.cemLatitude = recordArray[23];
-        this.cemLongitude = recordArray[24];
-        this.thumb = recordArray[25];
+        treatedData.set(5, recordArray[23]);//cemLatitude -->cemetery_latitude
+        treatedData.set(12, recordArray[23]);//cemLatitude -->event_place_latitude
+        treatedData.set(6, recordArray[24]);//cemLongitude -->cemetery_longitude        
+        treatedData.set(13, recordArray[24]);//cemLongitude -->event_place_longitude 
+        treatedData.set(0, recordArray[25]);//thumb --> bg_thumbnail_url
 
         this.systemTimeStamp = timeStamp;
 
         String prName = this.treatNames(famNames, gnNames);
-        System.out.println("\r");
-        System.out.println("This is the PR_NAME " + prName);
+        treatedData.set(33, prName);
+        treatedData.set(34, gnNames);
+        treatedData.set(38, famNames);
 
         String eventPlace = this.treatEventPlace(cemCity, cemCounty, cemState, cemCountry);
-        //System.out.println("This is the EVENT_PLACE " + eventPlace);
+        treatedData.set(11, eventPlace);
+        treatedData.set(2, cemCity);
+        treatedData.set(4, cemCounty);
+        treatedData.set(8, cemState);
+        treatedData.set(3, cemCountry);
 
         String prDeathDate = this.treatDeathDate(deaDay, deaMonth, deaYear);
         if (prDeathDate != null) {
-            System.out.println("This is the PR_DEATH_DATE " + prDeathDate);
+            treatedData.set(10, prDeathDate);//event_date
+            treatedData.set(28, prDeathDate);
+            treatedData.set(29, dayToDayPadded(deaDay));
+            treatedData.set(30, monthToAlpha(deaMonth));
+            treatedData.set(31, yearVerify(deaYear));
+            treatedData.set(32, recordArray[10]);//pr_death_year_orig
         }
         String prBirthDate = this.treatBirthDate(birDay, birMonth, birYear);
         if (prBirthDate != null) {
-            System.out.println("This is the PR_BIRTH_DATE " + prBirthDate);
+            treatedData.set(24, prBirthDate);
+            treatedData.set(25, dayToDayPadded(birDay));
+            treatedData.set(26, monthToAlpha(birMonth));
+            treatedData.set(27, yearVerify(birYear));
         }
         String prMarriageDate = this.treatMarriageDate(marDay, marMonth, marYear);
         if (prMarriageDate != null) {
-            System.out.println("This is the PR_BIRTH_DATE " + prMarriageDate);
+            treatedData.set(19, prMarriageDate);
+            treatedData.set(20, dayToDayPadded(marDay));
+            treatedData.set(21, monthToAlpha(marMonth));
+            treatedData.set(22, yearVerify(marYear));
         }
-
         String sourceFile = filePath.getName();
         String recordGroup = this.createRecordGroup(sourceFile);
-        //System.out.println("This is the record group " + recordGroup);
+        treatedData.set(39, recordGroup);
+        PPOFNLDataWriter myQuery = new PPOFNLDataWriter(treatedData);
     }
 
     private String treatNames(String surname, String givenName) {
 
         String prName = null;
         if (gnNames != null || famNames != null) {
-
             String prNameA = gnNames + " " + famNames;
             prName = prNameA.trim();
         }
         return prName;
-
     }
 
     private String treatEventPlace(String cemeteryCity, String cemeteryCounty, String cemeteryState, String cemeteryCountry) {
 
-        String eventPlaceB = null;
-        String eventPlace = null;
+        String eventPlaceB;
+        String eventPlace;
 
         String eventPlaceA = cemCity + ", " + cemCounty + ", " + cemState + ", " + cemCountry;
 
@@ -189,105 +200,57 @@ public class TreatBurialRecord {
         return concatenateDate(dayPadded, monthAlpha, yearVerified);
     }
 
-    public String concatenateDate(String day, String month, String year) {
-        String dateConcatenated;
-
-        if (day != "0" && month != "0" && year != "0") {
-            dateConcatenated = day + " " + month + " " + year;
-        } else if (month == "0" && year != "0") {
-            dateConcatenated = year;
-        } else if (day == "0" && month != "0" && year != "0") {
-            dateConcatenated = month + " " + year;
-        } else {
-            dateConcatenated = null;
-        }
-        return dateConcatenated;
-    }
-
     public String dayToDayPadded(String rawDay) {
-        if(rawDay == null) {
+
+        if (rawDay == null) {
             return null;
         }
-        String paddedDay = null;
 //verify day is within the range of 1 to 31 and pad the value to length of 2
-        if (rawDay != "0") {
-            int dayInt = Integer.parseInt(rawDay);
-
-            if (dayInt > 1 && dayInt < 32) {
-                String strDay = Integer.toString(dayInt);
-                if (strDay.length() == 1) {
-                    paddedDay = "0" + strDay;
-                }
-            } else {
-                paddedDay = "0";
-            }
+        if (Integer.parseInt(rawDay) > 0 && Integer.parseInt(rawDay) < 32 && rawDay.length() == 2) {
+            return rawDay;
         }
-        return paddedDay;
+        if (Integer.parseInt(rawDay) > 0 && Integer.parseInt(rawDay) < 32 && rawDay.length() == 1) {
+            return "0" + rawDay;
+        }
+        return null;
     }
 
     private String yearVerify(String rawYear) {
-        String year = null;        
-            if (rawYear.length() == 4) {
-                year = rawYear;
-            } else {
-                year = "0";
-            }        
-        return year;
+        if (rawYear == null) {
+            return null;
+        }
+        if (rawYear.length() == 4) {
+            return rawYear;
+        }
+        return null;
     }
 
     private String monthToAlpha(String numericMonth) {
-        String month;
-        switch (numericMonth) {
-            case "1":
-            case "01":
-                month = "Jan";
-                break;
-            case "2":
-            case "02":
-                month = "Feb";
-                break;
-            case "3":
-            case "03":
-                month = "Mar";
-                break;
-            case "4":
-            case "04":
-                month = "Apr";
-                break;
-            case "5":
-            case "05":
-                month = "May";
-                break;
-            case "6":
-            case "06":
-                month = "Jun";
-                break;
-            case "7":
-            case "07":
-                month = "Jul";
-                break;
-            case "8":
-            case "08":
-                month = "Aug";
-                break;
-            case "9":
-            case "09":
-                month = "Sep";
-                break;
-            case "10":
-                month = "Oct";
-                break;
-            case "11":
-                month = "Nov";
-                break;
-            case "12":
-                month = "Dec";
-                break;
-            default:
-                month = "0";
-                break;
+        if (numericMonth == null) {
+            return null;
         }
-        return month;
+        int monthNumber = Integer.parseInt(numericMonth);
+        if (monthNumber < 13) {
+            String month = new DateFormatSymbols().getMonths()[monthNumber - 1].substring(0, 3);
+            return month;
+        }
+        return null;
     }
 
+    public String concatenateDate(String day, String month, String year) {
+
+        if (day == null && month == null && year == null) {
+            return null;
+        }
+        if (day != null && month != null && year != null) {
+            return day + " " + month + " " + year;
+        }
+        if (month == null && year != null) {
+            return year;
+        }
+        if (day == null && month != null && year != null) {
+            return month + " " + year;
+        }
+        return null;
+    }
 }
