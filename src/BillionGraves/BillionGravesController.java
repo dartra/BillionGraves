@@ -8,8 +8,8 @@ package BillionGraves;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +49,8 @@ public class BillionGravesController implements Initializable {
     private RecordDataFields dataReaderSimpleString;
     private int rowCount;
 
+    String fileGroupIngestTimestamp = MiscUtilities.getGroupTimeStamp();
+    
     @FXML
     private Button btnFileChooser;
 
@@ -233,8 +235,9 @@ public class BillionGravesController implements Initializable {
     }
 
     @FXML
-    public void btnFileIngest(ActionEvent event) {
-
+    @SuppressWarnings("empty-statement")
+    public void btnFileIngest(ActionEvent event) throws SQLException {
+        
         //Truncate table is checkbox is selected    
         PPOFNLDataWriter truncateTable = new PPOFNLDataWriter(chkBoxTruncate.isSelected());
 
@@ -243,10 +246,7 @@ public class BillionGravesController implements Initializable {
             String hashKey = lstViewFiles.getItems().get(i).toString();
             selectFilePath = namePath.get(hashKey);
 
-            //set timestamp for record group field
-            Date systemDate = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-            String ingestTimeStamp = sdf.format(systemDate);
+            String ingestTimeStamp = MiscUtilities.getTimeStamp();//set timestamp for record group field
 
             //get all the data one row at a time and treat        
             try {
@@ -256,22 +256,33 @@ public class BillionGravesController implements Initializable {
                 Logger.getLogger(BillionGravesController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
+        
+        PPOFNLDataWriter getGrossRecordCount = new PPOFNLDataWriter("GROSS");
+        Map<String, Integer> grossCountMap = getGrossRecordCount.grossData;
+        
         PPOFNLDataWriter removeDupes = new PPOFNLDataWriter();//removes dupes from load table.
-        //PPOFNLDataWriter assignUI = new PPOFNLDataWriter(chkBoxUI.isSelected(), "");Not ready to use.  Need to remove dupe rows first.
+        
+        PPOFNLDataWriter getNetRecordCount = new PPOFNLDataWriter("NET");
+        Map<String, Integer> netCountMap = getNetRecordCount.netData;
+   
+        PPOFNLDataWriter writeLog = new PPOFNLDataWriter(grossCountMap, netCountMap, fileGroupIngestTimestamp);
+       
+            //PPOFNLDataWriter assignUI = new PPOFNLDataWriter(chkBoxUI.isSelected(), "");Not ready to use.  Need to remove dupe rows first.
     }
 
     @FXML
-    public void cbxRowsToPreview(ActionEvent event) {
+    public void cbxRowsToPreview(ActionEvent event
+    ) {
         //System.out.println(cbxRowsToPreview.getSelectionModel().getSelectedItem());
         rowCount = Integer.valueOf(cbxRowsToPreview.getSelectionModel().getSelectedItem().toString());
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle rb
+    ) {
         tvDataPreview.getColumns().clear();
         cbxRowsToPreview.getSelectionModel().select(0);
-
+        
         int selectedFileCount = lstViewFiles.getItems().size();
         Map buttonState = MiscUtilities.getButtonState(selectedFileCount);
 

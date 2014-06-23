@@ -5,9 +5,12 @@
  */
 package BillionGraves;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,7 +28,31 @@ import java.util.logging.Logger;
  */
 public class PPOFNLDataWriter {
 
+    Map<String, Integer> grossData = new LinkedHashMap<>();
+    Map<String, Integer> netData = new LinkedHashMap<>();
+
+    static final String STATSQUERY = "SELECT RECORD_GROUP, COUNT(*) STATCOUNT "
+            + "FROM WRK_BILLION_GRAVES_LOAD GROUP BY RECORD_GROUP "
+            + "ORDER BY RECORD_GROUP";
     static String insertQuery;
+
+//call this to get the record counts before and after dedupe
+    public PPOFNLDataWriter(String grossOrNet) throws SQLException { //call this to get the record counts before and after dedupe
+
+        try (Statement statement = dbConnection.createStatement()) {
+            ResultSet rs = statement.executeQuery(STATSQUERY);
+            while (rs.next()) {
+                switch (grossOrNet) {
+                    case "GROSS":
+                        grossData.put(rs.getString("RECORD_GROUP"), Integer.parseInt(rs.getString("STATCOUNT")));
+                        break;
+                    case "NET":
+                        netData.put(rs.getString("RECORD_GROUP"), Integer.parseInt(rs.getString("STATCOUNT")));
+                        break;
+                }
+            }
+        }
+    }
 
     public PPOFNLDataWriter(List<String> lineData) {
         List<String> myLineData = new ArrayList<>(lineData);
@@ -105,7 +132,7 @@ public class PPOFNLDataWriter {
             Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private static final Connection dbConnection = getConnection();
 
     private static void saveToDatabase(String query) throws SQLException {
@@ -122,10 +149,10 @@ public class PPOFNLDataWriter {
         }
     }
 
-    private void assignUI(String UIQuery) throws SQLException {
+    private void assignUI(String uiQuery) throws SQLException {
 
         try (Statement statement = dbConnection.createStatement()) {
-            statement.execute(UIQuery);
+            statement.execute(uiQuery);
         }
     }
 
@@ -134,10 +161,9 @@ public class PPOFNLDataWriter {
         String idHold = null;
         String imageId;
         String rowId;
-        
+//read each row and analyze for dupe and assign rowid's of dupes to list
         try (Statement statement = dbConnection.createStatement()) {
-            ResultSet rs = statement.executeQuery(orderedQuery);//read each row and analyze for dupe and assign rowid's of dupes to list
-
+            ResultSet rs = statement.executeQuery(orderedQuery);
             while (rs.next()) {
                 imageId = rs.getString("IMAGE_ID");
                 rowId = rs.getString("ROWID");
@@ -172,7 +198,6 @@ public class PPOFNLDataWriter {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
-
             Properties connectionProperties = new Properties();
             connectionProperties.put("user", "ppofnl");
             connectionProperties.put("password", "junesnow");
@@ -208,12 +233,53 @@ public class PPOFNLDataWriter {
 
     public PPOFNLDataWriter(boolean assignUI, String emptyString) {
         if (assignUI == true) {
-            String UIQuery = "";//this needs to be changed to UI assignment
+            String uiQuery = "";//this needs to be changed to UI assignment
             try {
-                assignUI(UIQuery);
+                assignUI(uiQuery);
             } catch (SQLException ex) {
                 Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public PPOFNLDataWriter(Map<String, Integer> grossCountMap, Map<String, Integer> netCountMap, String groupTimeStamp) {//write ingest log
+        String DEFAULTPATH = "R:/FinalAssembly/PROJECTS/BillionGraves/SourceData/";
+        int totalGrossCount = 0;
+        int totalNetCount = 0;
+
+        try {
+            File file = new File(DEFAULTPATH + groupTimeStamp + "_Ingest_Log.txt");
+
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+
+                for (String key : grossCountMap.keySet()) {
+                    int value = grossCountMap.get(key);
+                    bw.write("Record Group = " + key + " - Gross Record Count = " + value + "\r");
+                    totalGrossCount = totalGrossCount + value;
+                }
+                bw.write("\r");
+
+                for (String key : netCountMap.keySet()) {
+                    int value = netCountMap.get(key);
+                    bw.write("Record Group = " + key + " - Net Record Count = " + value + "\r");
+                    totalNetCount = totalNetCount + value;
+                }
+                bw.write("\r");
+                bw.write("Total Delivered Records = " + totalGrossCount + "\r");
+                bw.write("Total Unique Records = " + totalNetCount + "\r");
+                bw.write("Total Dupe Records Removed = " + (totalGrossCount - totalNetCount));
+            }
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        System.out.println("Done");
     }
 }

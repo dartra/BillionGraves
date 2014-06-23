@@ -6,6 +6,8 @@
 package BillionGraves;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +18,11 @@ import javafx.stage.FileChooser;
  * @author DartRA
  */
 public class MiscUtilities {
-
+    
+                         
     public List<File> getFilePath() {
-
-        File defaultPath = new File("R:/FinalAssembly/PROJECTS/BillionGraves/SourceData");
+        
+        File defaultPath = new File("R:/FinalAssembly/PROJECTS/BillionGraves/SourceData/");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(defaultPath);
 
@@ -29,7 +32,22 @@ public class MiscUtilities {
 
         return filePath;
     }
-
+     /**
+     *
+     * @return
+     */
+    public static String getTimeStamp() {
+            Date systemDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+            String timeStamp = sdf.format(systemDate);
+        return timeStamp;
+    }
+    public static String getGroupTimeStamp() {
+            Date systemDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_h-mm-ss a");
+            String timeStamp = sdf.format(systemDate);
+        return timeStamp;
+    }    
     /**
      *
      * @param selectedFileCount
