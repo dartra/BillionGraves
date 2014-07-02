@@ -8,23 +8,33 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" fx:id="rootAnchorPane" disable="false" focusTraversable="false" prefHeight="526.0001068115234" prefWidth="1004.0" xmlns:fx="http://javafx.com/fxml" fx:controller="BillionGraves.BillionGravesController">
+<AnchorPane id="AnchorPane" fx:id="rootAnchorPane" disable="false" focusTraversable="false" prefHeight="669.0001068115234" prefWidth="1004.0" xmlns:fx="http://javafx.com/fxml" fx:controller="BillionGraves.BillionGravesController">
   <children>
+    <Pane layoutX="14.0" layoutY="51.0" prefHeight="125.0" prefWidth="327.0">
+      <children>
+        <ListView fx:id="lstViewFiles" disable="true" focusTraversable="false" layoutX="2.0" layoutY="0.0" prefHeight="125.0" prefWidth="319.0" />
+        <Button fx:id="btnRemove1" layoutX="296.0" layoutY="0.0" minHeight="16.0" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnRemove1" prefHeight="24.000099999997474" text="-" />
+        <Button fx:id="btnRemove2" layoutX="296.0" layoutY="26.0" minHeight="16.0" mnemonicParsing="false" onAction="#btnRemove2" prefHeight="21.0000084472631" text="-" />
+        <Button fx:id="btnRemove3" layoutX="296.0" layoutY="49.0" minHeight="16.0" mnemonicParsing="false" onAction="#btnRemove3" prefHeight="24.0" text="-" />
+        <Button fx:id="btnRemove4" layoutX="296.0" layoutY="76.0" minHeight="16.0" mnemonicParsing="false" onAction="#btnRemove4" prefHeight="21.000099999997474" text="-" />
+        <Button fx:id="btnRemove5" layoutX="296.0" layoutY="99.0" minHeight="16.0" minWidth="-1.0" mnemonicParsing="false" onAction="#btnRemove5" prefHeight="21.000099999997474" text="-" />
+      </children>
+    </Pane>
     <Label layoutX="465.0" layoutY="255.0" text="Ingest File List">
       <effect>
         <DropShadow color="#64646400" offsetX="5.0" offsetY="5.0" />
       </effect>
     </Label>
     <Button id="btnFileChoose" layoutX="16.0" layoutY="21.0" mnemonicParsing="false" onAction="#btnFileChooser" prefHeight="21.0" prefWidth="265.0" text="Choose Billion Graves Text File(s) to Ingest" />
-    <TableView fx:id="tvDataPreview" layoutX="295.0" layoutY="20.0" prefHeight="492.0" prefWidth="630.0">
+    <TableView fx:id="tvDataPreview" layoutX="352.0" layoutY="20.0" prefHeight="636.0" prefWidth="638.0">
       <columns>
         <TableColumn prefWidth="75.0" text="Column X" />
         <TableColumn prefWidth="75.0" text="Column X" />
       </columns>
     </TableView>
-    <Button id="btnFileChoose" fx:id="btnFileIngest" layoutX="11.0" layoutY="477.0" mnemonicParsing="false" onAction="#btnFileIngest" prefHeight="35.0" prefWidth="147.0" text="Start Data Ingest" />
-    <Label layoutX="18.0" layoutY="290.0" text="# of Rows to Preview" />
-    <ComboBox id="" fx:id="cbxRowsToPreview" layoutX="157.0" layoutY="290.0" minWidth="48.0" onAction="#cbxRowsToPreview" prefHeight="21.0" prefWidth="75.0">
+    <Button id="btnFileChoose" fx:id="btnFileIngest" layoutX="11.0" layoutY="377.0" mnemonicParsing="false" onAction="#btnFileIngest" prefHeight="35.0" prefWidth="147.0" text="Start Data Ingest" />
+    <Label layoutX="18.0" layoutY="190.0" text="# of Rows to Preview" />
+    <ComboBox id="" fx:id="cbxRowsToPreview" layoutX="157.0" layoutY="190.0" minWidth="48.0" onAction="#cbxRowsToPreview" prefHeight="21.0" prefWidth="75.0">
       <items>
         <FXCollections fx:factory="observableArrayList">
           <String fx:value="10" />
@@ -36,19 +46,11 @@
         </FXCollections>
       </items>
     </ComboBox>
-    <CheckBox fx:id="chkBoxTruncate" layoutX="11.0" layoutY="426.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="147.0" selected="true" text="Truncate Table Before Ingest Begins" wrapText="true" />
-    <Label layoutX="14.0" layoutY="379.0" text="Destination Table" />
-    <Label layoutX="14.0" layoutY="402.0" prefWidth="218.0" text="PPOFNL.WRK_BILLION_GRAVES_LOAD" />
-    <Button fx:id="btnPreviewData" layoutX="16.0" layoutY="319.0" mnemonicParsing="false" onAction="#btnPreviewData" prefWidth="218.0" text="Preview Data" />
-    <Pane layoutX="14.0" layoutY="51.0" prefHeight="125.0" prefWidth="269.0">
-      <children>
-        <ListView fx:id="lstViewFiles" disable="true" focusTraversable="false" layoutX="2.0" layoutY="0.0" prefHeight="125.0" prefWidth="265.0" />
-        <Button fx:id="btnRemove1" layoutX="242.0" layoutY="0.0" minHeight="16.0" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnRemove1" prefHeight="24.000099999997474" text="-" />
-        <Button fx:id="btnRemove2" layoutX="242.0" layoutY="26.0" minHeight="16.0" mnemonicParsing="false" onAction="#btnRemove2" prefHeight="21.0000084472631" text="-" />
-        <Button fx:id="btnRemove3" layoutX="242.0" layoutY="49.0" minHeight="16.0" mnemonicParsing="false" onAction="#btnRemove3" prefHeight="24.0" text="-" />
-        <Button fx:id="btnRemove4" layoutX="242.0" layoutY="75.0" minHeight="16.0" mnemonicParsing="false" onAction="#btnRemove4" prefHeight="21.000099999997474" text="-" />
-        <Button fx:id="btnRemove5" layoutX="242.0" layoutY="99.0" minHeight="16.0" minWidth="-1.0" mnemonicParsing="false" onAction="#btnRemove5" prefHeight="21.000099999997474" text="-" />
-      </children>
-    </Pane>
+    <CheckBox fx:id="chkBoxTruncate" layoutX="10.0" layoutY="326.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="147.0" selected="true" text="Truncate Table Before Ingest Begins" wrapText="true" />
+    <Label layoutX="14.0" layoutY="279.0" text="Destination Table" />
+    <Label layoutX="14.0" layoutY="302.0" prefWidth="218.0" text="PPOFNL.WRK_BILLION_GRAVES_LOAD" />
+    <Button fx:id="btnPreviewData" layoutX="16.0" layoutY="219.0" mnemonicParsing="false" onAction="#btnPreviewData" prefWidth="218.0" text="Preview Data" />
+    <CheckBox id="" fx:id="chkBoxUI" layoutX="149.0" layoutY="326.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="132.0" selected="false" text="Auto-assign Unique_Identifiers at Completion of Ingest" wrapText="true" />
+    <ListView layoutX="15.0" layoutY="421.0" prefHeight="221.0" prefWidth="327.0" />
   </children>
 </AnchorPane>

@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -31,12 +33,15 @@ public class PPOFNLDataWriter {
     Map<String, Integer> grossData = new LinkedHashMap<>();
     Map<String, Integer> netData = new LinkedHashMap<>();
 
+    static String insertQuery;
+
     static final String STATSQUERY = "SELECT RECORD_GROUP, COUNT(*) STATCOUNT "
             + "FROM WRK_BILLION_GRAVES_LOAD GROUP BY RECORD_GROUP "
             + "ORDER BY RECORD_GROUP";
-    static String insertQuery;
 
-//call this to get the record counts before and after dedupe
+    static final String UIQUERY = "SELECT TST_UNIQUE_ID_SEQ.NEXTVAL AS UI FROM DUAL";//CHANGE THIS TO UNIQUE_ID_SEQ AFTER TESTING
+
+    //call this to get the record counts before and after dedupe
     public PPOFNLDataWriter(String grossOrNet) throws SQLException { //call this to get the record counts before and after dedupe
 
         try (Statement statement = dbConnection.createStatement()) {
@@ -151,9 +156,61 @@ public class PPOFNLDataWriter {
 
     private void assignUI(String uiQuery) throws SQLException {
 
-        try (Statement statement = dbConnection.createStatement()) {
-            statement.execute(uiQuery);
+        int batchCount = 0;
+
+        String newUI = "";
+        final String SQL_SORT_KEY_DATA = "SELECT IMAGE_ID, "
+                + "SOUNDEX(PR_NAME_GN) AS S_PR_NAME_GN, "
+                + "SOUNDEX(PR_NAME_SURN) AS S_PR_NAME_SURN, "
+                + "SOUNDEX(CEMETERY_NAME) AS S_CEMETERY_NAME, "
+                + "SOUNDEX(CEMETERY_CITY) AS S_CEMETERY_CITY, "
+                + "SOUNDEX(CEMETERY_STATE) AS S_CEMETERY_STATE, "
+                + "SOUNDEX(CEMETERY_COUNTRY) AS S_CEMETERY_COUNTRY  "
+                + "FROM WRK_BILLION_GRAVES_LOAD ORDER BY IMAGE_ID";
+        //System.out.println(SQL_SORT_KEY_DATA);
+        String updateTableSql = "UPDATE WRK_BILLION_GRAVES_LOAD SET UNIQUE_IDENTIFIER = ?, SORT_KEY = ?||?||?||?||?||?||?||? WHERE IMAGE_ID = ?";
+
+        PreparedStatement preparedStatement = dbConnection.prepareStatement(updateTableSql);
+        Statement readStatement = dbConnection.createStatement();
+        ResultSet rs1 = readStatement.executeQuery(SQL_SORT_KEY_DATA);
+        while (rs1.next()) {
+            try (Statement statement = dbConnection.createStatement()) {//get Unique Identifier from sequence generator
+                ResultSet rs = statement.executeQuery(uiQuery);
+                while (rs.next()) {
+                    newUI = rs.getString("UI");
+                }
+                statement.close();
+            }
+
+            preparedStatement.setString(1, newUI);
+            preparedStatement.setString(2, sortKeyNullCheck(rs1.getString("S_CEMETERY_COUNTRY")) + "_");
+            preparedStatement.setString(3, sortKeyNullCheck(rs1.getString("S_CEMETERY_STATE")) + "_");
+            preparedStatement.setString(4, sortKeyNullCheck(rs1.getString("S_CEMETERY_CITY")) + "_");
+            preparedStatement.setString(5, sortKeyNullCheck(rs1.getString("S_CEMETERY_NAME")) + "_");
+            preparedStatement.setString(6, sortKeyNullCheck(rs1.getString("S_PR_NAME_SURN")) + "_");
+            preparedStatement.setString(7, sortKeyNullCheck(rs1.getString("S_PR_NAME_GN")) + "_");
+            preparedStatement.setString(8, StringUtils.leftPad(rs1.getString("IMAGE_ID"), 20, "0") + "_");
+            preparedStatement.setString(9, StringUtils.leftPad(newUI, 20, "0"));
+            preparedStatement.setString(10, rs1.getString("IMAGE_ID"));
+
+            preparedStatement.addBatch();
+            batchCount = batchCount + 1;
+
+            if (batchCount > 1000) {
+                preparedStatement.executeBatch();
+                batchCount = 0;
+            }
         }
+        preparedStatement.executeBatch();
+        preparedStatement.close();
+    }
+
+    private String sortKeyNullCheck(String soundexElement) {
+        if (soundexElement != null) {
+        } else {
+            soundexElement = "0000";
+        }
+        return soundexElement;
     }
 
     private void removeDupes(String orderedQuery) throws SQLException {
@@ -233,9 +290,8 @@ public class PPOFNLDataWriter {
 
     public PPOFNLDataWriter(boolean assignUI, String emptyString) {
         if (assignUI == true) {
-            String uiQuery = "";//this needs to be changed to UI assignment
             try {
-                assignUI(uiQuery);
+                assignUI(UIQUERY);
             } catch (SQLException ex) {
                 Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
             }

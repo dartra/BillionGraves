@@ -110,6 +110,9 @@ public class TreatBurialRecord {
         treatedData.set(3, cemCountry);
 
         String prDeathDate = this.treatDeathDate(deaDay, deaMonth, deaYear);
+        if (prDeathDate == null) {
+            treatedData.set(15, "No Event Date");//Exclude_From_Export
+        }
         if (prDeathDate != null) {
             treatedData.set(10, prDeathDate);//event_date
             treatedData.set(28, prDeathDate);
@@ -140,32 +143,45 @@ public class TreatBurialRecord {
 
     private String treatNames(String surname, String givenName) {
 
-        String prName = null;
-        if (gnNames != null || famNames != null) {
-            String prNameA = gnNames + " " + famNames;
-            prName = prNameA.trim();
+        String prName;
+
+        if (surname != null) {
+        } else {
+            surname = "";
         }
+        if (givenName != null) {
+        } else {
+            givenName = "";
+        }
+        String prNameA = givenName + " " + surname;
+        prName = prNameA.trim();
+
         return prName;
     }
 
     private String treatEventPlace(String cemeteryCity, String cemeteryCounty, String cemeteryState, String cemeteryCountry) {
 
-        String eventPlaceB;
-        String eventPlace;
-
-        String eventPlaceA = cemCity + ", " + cemCounty + ", " + cemState + ", " + cemCountry;
-
-        if (eventPlaceA.length() >= 4 && eventPlaceA.contains(", , ")) {
-            eventPlaceB = eventPlaceA.replace(", , ", ", ");
+        if (cemeteryCity != null && cemeteryCity.length() > 0) {
+            cemeteryCity = cemeteryCity + ", ";
         } else {
-            eventPlaceB = eventPlaceA;
+            cemeteryCity = "";
         }
-        if (eventPlaceB.length() >= 2 && eventPlaceB.substring(0, 1) == ", ") {
-            eventPlace = eventPlaceB.substring(2);
+        if (cemeteryCounty != null && cemeteryCounty.length() > 0) {
+            cemeteryCounty = cemeteryCounty + ", ";
         } else {
-            eventPlace = eventPlaceB;
+            cemeteryCounty = "";
         }
-        return eventPlace;
+        if (cemeteryState != null && cemeteryState.length() > 0) {
+            cemeteryState = cemeteryState + ", ";
+        } else {
+            cemeteryState = "";
+        }
+        if (cemeteryCountry != null && cemeteryCountry.length() > 0) {
+        } else {
+            cemeteryCountry = "";
+        }
+
+        return cemeteryCity + cemeteryCounty + cemeteryState + cemeteryCountry;
     }
 
     private String createRecordGroup(String fileName) {

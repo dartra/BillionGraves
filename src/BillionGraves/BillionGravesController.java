@@ -5,11 +5,13 @@
  */
 package BillionGraves;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +28,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.Period;
 
 /**
  * FXML Controller class
@@ -50,7 +57,7 @@ public class BillionGravesController implements Initializable {
     private int rowCount;
 
     String fileGroupIngestTimestamp = MiscUtilities.getGroupTimeStamp();
-    
+
     @FXML
     private Button btnFileChooser;
 
@@ -86,6 +93,9 @@ public class BillionGravesController implements Initializable {
 
     @FXML
     private Button btnFileIngest;
+    
+    @FXML
+    private ListView lstViewConsole;
 
     @FXML
     private TableView tvDataPreview;
@@ -226,7 +236,7 @@ public class BillionGravesController implements Initializable {
         }
         tvDataPreview.setEditable(true);
 
-        Object myRowData[] = dataReader.getAllData().toArray();
+        Object[] rowData = dataReader.getAllData().toArray();
 
         for (int i = 0; i < (dataReader.getAllData().size()); i++) {
 
@@ -234,10 +244,14 @@ public class BillionGravesController implements Initializable {
         tvDataPreview.setItems(dataReader.getData());
     }
 
+    /**
+     *
+     * @param event
+     * @throws SQLException
+     */
     @FXML
-    @SuppressWarnings("empty-statement")
     public void btnFileIngest(ActionEvent event) throws SQLException {
-        
+        long startTime = System.currentTimeMillis();
         //Truncate table is checkbox is selected    
         PPOFNLDataWriter truncateTable = new PPOFNLDataWriter(chkBoxTruncate.isSelected());
 
@@ -256,18 +270,33 @@ public class BillionGravesController implements Initializable {
                 Logger.getLogger(BillionGravesController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         PPOFNLDataWriter getGrossRecordCount = new PPOFNLDataWriter("GROSS");
         Map<String, Integer> grossCountMap = getGrossRecordCount.grossData;
-        
+
         PPOFNLDataWriter removeDupes = new PPOFNLDataWriter();//removes dupes from load table.
-        
+
+        PPOFNLDataWriter assignUI = new PPOFNLDataWriter(chkBoxUI.isSelected(), "");//Not ready to use.  Need to remove dupe rows first.
+
+        Date endDate = new Date();
+
         PPOFNLDataWriter getNetRecordCount = new PPOFNLDataWriter("NET");
         Map<String, Integer> netCountMap = getNetRecordCount.netData;
-   
+
         PPOFNLDataWriter writeLog = new PPOFNLDataWriter(grossCountMap, netCountMap, fileGroupIngestTimestamp);
-       
-            //PPOFNLDataWriter assignUI = new PPOFNLDataWriter(chkBoxUI.isSelected(), "");Not ready to use.  Need to remove dupe rows first.
+
+        long endTime = System.currentTimeMillis();
+
+        Interval interval = new Interval(startTime, endTime);
+        Period period = interval.toPeriod();
+        
+        System.out.println("Total elaped time = " + StringUtils.leftPad(String.valueOf(period.getHours()), 2, "0") + ":"
+                + StringUtils.leftPad(String.valueOf(period.getMinutes()), 2, "0") + ":" 
+                + StringUtils.leftPad(String.valueOf(period.getSeconds()), 2, "0"));
+        
+      Console myConsole;
+      
+        
     }
 
     @FXML
@@ -282,7 +311,7 @@ public class BillionGravesController implements Initializable {
     ) {
         tvDataPreview.getColumns().clear();
         cbxRowsToPreview.getSelectionModel().select(0);
-        
+
         int selectedFileCount = lstViewFiles.getItems().size();
         Map buttonState = MiscUtilities.getButtonState(selectedFileCount);
 

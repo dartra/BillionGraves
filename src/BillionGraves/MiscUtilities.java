@@ -58,7 +58,7 @@ public class MiscUtilities {
         
         switch (selectedFileCount) {
             case 1:
-                mMap.clear();                       ;
+                mMap.clear();
                 mMap.put("Button1", true);
                 mMap.put("Button2", false);
                 mMap.put("Button3", false);
