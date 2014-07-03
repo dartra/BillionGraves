@@ -28,6 +28,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.apache.commons.lang3.StringUtils;
@@ -93,9 +94,9 @@ public class BillionGravesController implements Initializable {
 
     @FXML
     private Button btnFileIngest;
-    
+
     @FXML
-    private ListView lstViewConsole;
+    private TextArea txtAreaConsole;
 
     @FXML
     private TableView tvDataPreview;
@@ -289,14 +290,11 @@ public class BillionGravesController implements Initializable {
 
         Interval interval = new Interval(startTime, endTime);
         Period period = interval.toPeriod();
-        
+
         System.out.println("Total elaped time = " + StringUtils.leftPad(String.valueOf(period.getHours()), 2, "0") + ":"
-                + StringUtils.leftPad(String.valueOf(period.getMinutes()), 2, "0") + ":" 
+                + StringUtils.leftPad(String.valueOf(period.getMinutes()), 2, "0") + ":"
                 + StringUtils.leftPad(String.valueOf(period.getSeconds()), 2, "0"));
-        
-      Console myConsole;
-      
-        
+
     }
 
     @FXML
