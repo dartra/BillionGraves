@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="Billion Graves.jnlp">
+  <information>
+    <title>Billion Graves</title>
+    <vendor>DartRA</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <jfx:javafx-runtime version="2.2+" href="http://javadl.sun.com/webapps/download/GetFile/javafx-latest/windows-i586/javafx2.jnlp"/>
+  </resources>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="BillionGraves.jar" size="41490" download="eager" />
+    <jar href="lib/commons-lang3-3.3.2-javadoc.jar" size="1074965" download="eager" />
+    <jar href="lib/commons-lang3-3.3.2.jar" size="412740" download="eager" />
+    <jar href="lib/joda-time-2.3-javadoc.jar" size="1301413" download="eager" />
+    <jar href="lib/joda-time-2.3-sources.jar" size="718287" download="eager" />
+    <jar href="lib/joda-time-2.3.jar" size="581571" download="eager" />
+    <jar href="lib/ojdbc14.jar" size="1545954" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="Billion Graves" >
+    <param name="requiredFXVersion" value="2.2+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="BillionGraves.BillionGraves"  name="Billion Graves" />
+  <update check="always"/>
+</jnlp>
