@@ -255,13 +255,15 @@ public class BillionGravesController implements Initializable {
         long startTime = System.currentTimeMillis();
         //Truncate table is checkbox is selected    
         PPOFNLDataWriter truncateTable = new PPOFNLDataWriter(chkBoxTruncate.isSelected());
-
+        
+        System.out.println("Ingesting records");
         //Start the data ingest
         for (int i = 0; i < (lstViewFiles.getItems().size()); i++) {  //loop to process each selected file*********
             String hashKey = lstViewFiles.getItems().get(i).toString();
             selectFilePath = namePath.get(hashKey);
 
             String ingestTimeStamp = MiscUtilities.getTimeStamp();//set timestamp for record group field
+            System.out.println("  --Ingesting " + selectFilePath);
 
             //get all the data one row at a time and treat        
             try {
@@ -277,7 +279,7 @@ public class BillionGravesController implements Initializable {
 
         PPOFNLDataWriter removeDupes = new PPOFNLDataWriter();//removes dupes from load table.
 
-        PPOFNLDataWriter assignUI = new PPOFNLDataWriter(chkBoxUI.isSelected(), "");//Not ready to use.  Need to remove dupe rows first.
+        PPOFNLDataWriter assignUI = new PPOFNLDataWriter(chkBoxUI.isSelected(), "");//Not ready to use.
 
         Date endDate = new Date();
 
