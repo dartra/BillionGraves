@@ -49,7 +49,7 @@ public class TextFileReader {
 
                 olData = FXCollections.observableArrayList(Arrays.asList(fieldData));
 
-                for (int i = 0; i < fieldData.length; i++) {
+                for (String fieldData1 : fieldData) {
                 }
             }
             if (count > 1) {
@@ -69,7 +69,6 @@ public class TextFileReader {
 
         br = new BufferedReader(new FileReader(filePath.toString()));
         sCurrentLine = br.readLine();//read first line and skip it
-        sCurrentLine = br.readLine();
 
         while ((sCurrentLine = br.readLine()) != null) {
             count = count + 1;
@@ -98,7 +97,6 @@ public class TextFileReader {
         
         br = new BufferedReader(new FileReader(filePath.toString()));
         sCurrentLine = br.readLine();//read first line and skip it
-        sCurrentLine = br.readLine();
 
         while ((sCurrentLine = br.readLine()) != null) {
             TreatBurialRecord doTreatments = new TreatBurialRecord(filePath, sCurrentLine, dateTime);

@@ -153,17 +153,30 @@ public class PPOFNLDataWriter {
         }
     }
 
-    
+    private void removeEmbeddedCtrlAndPipes() throws SQLException {
+
+        System.out.println("Remove Embedded Control Characters And Embedded Pipes");
+
+        try (CallableStatement csPipes = dbConnection.prepareCall("{call SP_BG_REMOVE_EMBEDDED_PIPES}")) {
+            csPipes.execute();
+            csPipes.close();
+        } catch (SQLException e) {
+        }
+        try (CallableStatement csCtrl = dbConnection.prepareCall("{call SP_BG_REMOVE_EMBEDDED_CTRL}")) {
+            csCtrl.execute();
+            csCtrl.close();
+        } catch (SQLException e) {
+        }
+    }
+
+
     private void assignUI() throws SQLException {
         
         System.out.println("Assign UI and create Sort Key");
-        CallableStatement cs = null;
-        try {
-            cs = dbConnection.prepareCall("{call SP_BG_UI_SORT_KEY_ASSIGN}");
+        try (CallableStatement cs = dbConnection.prepareCall("{call SP_BG_UI_SORT_KEY_ASSIGN}")) {
             cs.execute();
-        } catch (SQLException e) {
-        } finally {
             cs.close();
+        } catch (SQLException e) {
         }
     }
 
@@ -175,6 +188,20 @@ public class PPOFNLDataWriter {
         return soundexElement;
     }
 
+        public PPOFNLDataWriter() {
+        String orderedQuery = "SELECT ROWID, IMAGE_ID FROM WRK_BILLION_GRAVES_LOAD ORDER BY IMAGE_ID"; //Identify dupe records
+        try {
+            removeDupes(orderedQuery);
+        } catch (SQLException ex) {
+            Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+        removeEmbeddedCtrlAndPipes(); //Remove embedded control characters and pipes
+        } catch (SQLException ex) {
+            Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private void removeDupes(String orderedQuery) throws SQLException {
         System.out.println("Removing Duplicate Records");
         
@@ -240,15 +267,6 @@ public class PPOFNLDataWriter {
             } catch (SQLException ex) {
                 Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-    }
-
-    public PPOFNLDataWriter() {//This constructor is used to identify dupe records
-        String orderedQuery = "SELECT ROWID, IMAGE_ID FROM WRK_BILLION_GRAVES_LOAD ORDER BY IMAGE_ID";
-        try {
-            removeDupes(orderedQuery);
-        } catch (SQLException ex) {
-            Logger.getLogger(PPOFNLDataWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

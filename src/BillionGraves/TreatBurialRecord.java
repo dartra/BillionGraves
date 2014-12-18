@@ -43,12 +43,14 @@ public class TreatBurialRecord {
 
     /**
      *
+     * @param filePath
      * @param currentLine the text line to be treated
+     * @param timeStamp
      * @throws IOException
      */
     public TreatBurialRecord(File filePath, String currentLine, String timeStamp) throws IOException {
 
-        List<String> treatedData = new ArrayList<String>();//initialize array container to hold treated fields
+        List<String> treatedData = new ArrayList<>();//initialize array container to hold treated fields
         for (int i = 0; i < 44; i++) {
             treatedData.add(null);
         }
@@ -143,8 +145,6 @@ public class TreatBurialRecord {
 
     private String treatNames(String surname, String givenName) {
 
-        String prName;
-
         if (surname != null) {
         } else {
             surname = "";
@@ -153,10 +153,8 @@ public class TreatBurialRecord {
         } else {
             givenName = "";
         }
-        String prNameA = givenName + " " + surname;
-        prName = prNameA.trim();
 
-        return prName;
+        return (givenName + " " + surname).trim();
     }
 
     private String treatEventPlace(String cemeteryCity, String cemeteryCounty, String cemeteryState, String cemeteryCountry) {
@@ -216,7 +214,7 @@ public class TreatBurialRecord {
         return concatenateDate(dayPadded, monthAlpha, yearVerified);
     }
 
-    public String dayToDayPadded(String rawDay) {
+    private String dayToDayPadded(String rawDay) {
 
         if (rawDay == null) {
             return null;

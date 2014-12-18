@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -58,6 +59,8 @@ public class BillionGravesController implements Initializable {
     private int rowCount;
 
     String fileGroupIngestTimestamp = MiscUtilities.getGroupTimeStamp();
+    
+    ObservableList<String> consoleItems =FXCollections.observableArrayList ();
 
     @FXML
     private Button btnFileChooser;
@@ -94,9 +97,9 @@ public class BillionGravesController implements Initializable {
 
     @FXML
     private Button btnFileIngest;
-
+    
     @FXML
-    private TextArea txtAreaConsole;
+    private ListView<String> lstConsole;
 
     @FXML
     private TableView tvDataPreview;
@@ -237,8 +240,6 @@ public class BillionGravesController implements Initializable {
         }
         tvDataPreview.setEditable(true);
 
-        Object[] rowData = dataReader.getAllData().toArray();
-
         for (int i = 0; i < (dataReader.getAllData().size()); i++) {
 
         }
@@ -252,11 +253,19 @@ public class BillionGravesController implements Initializable {
      */
     @FXML
     public void btnFileIngest(ActionEvent event) throws SQLException {
+        
         long startTime = System.currentTimeMillis();
-        //Truncate table is checkbox is selected    
+        //Truncate table is checkbox is selected
+        if (chkBoxTruncate.isSelected() == true) {
+            consoleItems.add("Truncating Load Table");
+            lstConsole.setItems(consoleItems); 
+        }
         PPOFNLDataWriter truncateTable = new PPOFNLDataWriter(chkBoxTruncate.isSelected());
         
         System.out.println("Ingesting records");
+        
+        consoleItems.add("Ingesting records");
+        lstConsole.setItems(consoleItems);
         //Start the data ingest
         for (int i = 0; i < (lstViewFiles.getItems().size()); i++) {  //loop to process each selected file*********
             String hashKey = lstViewFiles.getItems().get(i).toString();
@@ -264,6 +273,9 @@ public class BillionGravesController implements Initializable {
 
             String ingestTimeStamp = MiscUtilities.getTimeStamp();//set timestamp for record group field
             System.out.println("  --Ingesting " + selectFilePath);
+            
+            consoleItems.add("  --Ingesting " + selectFilePath);
+            lstConsole.setItems(consoleItems);
 
             //get all the data one row at a time and treat        
             try {
@@ -277,8 +289,12 @@ public class BillionGravesController implements Initializable {
         PPOFNLDataWriter getGrossRecordCount = new PPOFNLDataWriter("GROSS");
         Map<String, Integer> grossCountMap = getGrossRecordCount.grossData;
 
-        PPOFNLDataWriter removeDupes = new PPOFNLDataWriter();//removes dupes from load table.
-
+        consoleItems.add("Removing Duplicate Records");
+        lstConsole.setItems(consoleItems);
+        PPOFNLDataWriter removeDupes = new PPOFNLDataWriter();//removes dupes and embedded characters from load table.
+        
+        consoleItems.add("Assigning Unique Identifiers and Creating Sort Keys");
+        lstConsole.setItems(consoleItems);        
         PPOFNLDataWriter assignUI = new PPOFNLDataWriter(chkBoxUI.isSelected(), "");//Not ready to use.
 
         Date endDate = new Date();
@@ -293,6 +309,11 @@ public class BillionGravesController implements Initializable {
         Interval interval = new Interval(startTime, endTime);
         Period period = interval.toPeriod();
 
+        consoleItems.add("Total elaped time = " + StringUtils.leftPad(String.valueOf(period.getHours()), 2, "0") + ":"
+                + StringUtils.leftPad(String.valueOf(period.getMinutes()), 2, "0") + ":"
+                + StringUtils.leftPad(String.valueOf(period.getSeconds()), 2, "0"));
+        lstConsole.setItems(consoleItems);        
+        
         System.out.println("Total elaped time = " + StringUtils.leftPad(String.valueOf(period.getHours()), 2, "0") + ":"
                 + StringUtils.leftPad(String.valueOf(period.getMinutes()), 2, "0") + ":"
                 + StringUtils.leftPad(String.valueOf(period.getSeconds()), 2, "0"));
