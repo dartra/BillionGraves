@@ -36,9 +36,9 @@ public class PPOFNLDataWriter {
 
     static String insertQuery;
 
-    static final String STATSQUERY = "SELECT RECORD_GROUP, COUNT(*) STATCOUNT "
-            + "FROM WRK_BILLION_GRAVES_LOAD GROUP BY RECORD_GROUP "
-            + "ORDER BY RECORD_GROUP";
+    static final String STATSQUERY = "SELECT FS_RECORD_GROUP, COUNT(*) STATCOUNT "
+            + "FROM WRK_BILLION_GRAVES_LOAD GROUP BY FS_RECORD_GROUP "
+            + "ORDER BY FS_RECORD_GROUP";
 
     //call this to get the record counts before and after dedupe
     public PPOFNLDataWriter(String grossOrNet) throws SQLException {
@@ -48,10 +48,10 @@ public class PPOFNLDataWriter {
             while (rs.next()) {
                 switch (grossOrNet) {
                     case "GROSS":
-                        grossData.put(rs.getString("RECORD_GROUP"), Integer.parseInt(rs.getString("STATCOUNT")));
+                        grossData.put(rs.getString("FS_RECORD_GROUP"), Integer.parseInt(rs.getString("STATCOUNT")));
                         break;
                     case "NET":
-                        netData.put(rs.getString("RECORD_GROUP"), Integer.parseInt(rs.getString("STATCOUNT")));
+                        netData.put(rs.getString("FS_RECORD_GROUP"), Integer.parseInt(rs.getString("STATCOUNT")));
                         break;
                 }
             }
@@ -65,49 +65,49 @@ public class PPOFNLDataWriter {
 
         query.append("INSERT INTO WRK_BILLION_GRAVES_LOAD (");
         query.append("BG_THUMBNAIL_URL,");//0
-        query.append(" BG_URL,");//1
-        query.append(" CEMETERY_CITY,");//2
-        query.append(" CEMETERY_COUNTRY,");//3
-        query.append(" CEMETERY_COUNTY,");//4
+        query.append(" EXT_URL,");//1
+        query.append(" EVENT_CITY,");//2
+        query.append(" EVENT_COUNTRY,");//3
+        query.append(" EVENT_COUNTY,");//4
         query.append(" CEMETERY_LATITUDE,");//5
         query.append(" CEMETERY_LONGITUDE,");//6
-        query.append(" CEMETERY_NAME,");//7
-        query.append(" CEMETERY_STATE,");//8
-        query.append(" CREATED_TIMESTAMP,");//9
+        query.append(" EVENT_CEMETERY,");//7
+        query.append(" EVENT_STATE,");//8
+        query.append(" EXT_CREATE_DATE,");//9
         query.append(" EVENT_DATE,");//10
         query.append(" EVENT_PLACE,");//11
-        query.append(" EVENT_PLACE_LATITUDE,");//12
-        query.append(" EVENT_PLACE_LONGITUDE,");//13
+        query.append(" EVENT_LAT,");//12
+        query.append(" EVENT_LON,");//13
         query.append(" EVENT_TYPE,");//14
-        query.append(" EXCLUDE_FROM_EXPORT,");//15
+        query.append(" FS_EXCLUDE_FROM_EXPORT,");//15
         query.append(" FS_COLLECTION_ID,");//16
-        query.append(" IMAGE_ID,");//17
+        query.append(" EXT_IMAGE_ID,");//17
         query.append(" MAP_LOOKUP_URL,");//18
-        query.append(" MARRIAGE_DATE,");//19
-        query.append(" MARRIAGE_DAY,");//20
-        query.append(" MARRIAGE_MONTH,");//21
-        query.append(" MARRIAGE_YEAR,");//22
-        query.append(" PPQ_ID,");//23
-        query.append(" PR_BIRTH_DATE,");//24
-        query.append(" PR_BIRTH_DAY,");//25
-        query.append(" PR_BIRTH_MONTH,");//26
-        query.append(" PR_BIRTH_YEAR,");//27
-        query.append(" PR_DEATH_DATE,");//28
-        query.append(" PR_DEATH_DAY,");//29
-        query.append(" PR_DEATH_MONTH,");//30
-        query.append(" PR_DEATH_YEAR,");//31
-        query.append(" PR_DEATH_YEAR_ORIG,");//32
+        query.append(" CP_MARR_DATE,");//19
+        query.append(" CP_MARR_DAY,");//20
+        query.append(" CP_MARR_MONTH,");//21
+        query.append(" CP_MARR_YEAR,");//22
+        query.append(" FS_PPQ_ID,");//23
+        query.append(" PR_BIR_DATE,");//24
+        query.append(" PR_BIR_DAY,");//25
+        query.append(" PR_BIR_MONTH,");//26
+        query.append(" PR_BIR_YEAR,");//27
+        query.append(" PR_DEA_DATE,");//28
+        query.append(" PR_DEA_DAY,");//29
+        query.append(" PR_DEA_MONTH,");//30
+        query.append(" PR_DEA_YEAR,");//31
+        query.append(" PR_DEA_YEAR_ORIG,");//32
         query.append(" PR_NAME,");//33
         query.append(" PR_NAME_GN,");//34
-        query.append(" PR_NAME_MAIDEN,");//35
-        query.append(" PR_NAME_PREFIX,");//36
-        query.append(" PR_NAME_SUFFIX,");//37
+        query.append(" PR_NAME_MAID,");//35
+        query.append(" PR_NAME_PRE,");//36
+        query.append(" PR_NAME_SUF,");//37
         query.append(" PR_NAME_SURN,");//38
-        query.append(" RECORD_GROUP,");//39
-        query.append(" SORT_KEY,");//40
-        query.append(" SPOUSE_NAME_GN,");//41
-        query.append(" UNIQUE_IDENTIFIER,");//42
-        query.append(" UPDATED_TIMESTAMP");//43
+        query.append(" FS_RECORD_GROUP,");//39
+        query.append(" FS_SORT_KEY,");//40
+        query.append(" SP_NAME_GN,");//41
+        query.append(" FS_UNIQUE_ID,");//42
+        query.append(" EXT_UPDATE_DATE");//43
         query.append(") values (");
         for (int n = 0; n < 43; n++) {
             if (myLineData.get(n) != null) {
@@ -189,7 +189,7 @@ public class PPOFNLDataWriter {
     }
 
         public PPOFNLDataWriter() {
-        String orderedQuery = "SELECT ROWID, IMAGE_ID FROM WRK_BILLION_GRAVES_LOAD ORDER BY IMAGE_ID"; //Identify dupe records
+        String orderedQuery = "SELECT ROWID, EXT_IMAGE_ID FROM WRK_BILLION_GRAVES_LOAD ORDER BY EXT_IMAGE_ID"; //Identify dupe records
         try {
             removeDupes(orderedQuery);
         } catch (SQLException ex) {
@@ -213,7 +213,7 @@ public class PPOFNLDataWriter {
         try (Statement statement = dbConnection.createStatement()) {
             ResultSet rs = statement.executeQuery(orderedQuery);
             while (rs.next()) {
-                imageId = rs.getString("IMAGE_ID");
+                imageId = rs.getString("EXT_IMAGE_ID");
                 rowId = rs.getString("ROWID");
 
                 if (imageId.equals(idHold)) {

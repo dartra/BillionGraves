@@ -67,35 +67,38 @@ public class TreatBurialRecord {
 
         treatedData.set(14, "Burial");//event_type
         treatedData.set(16, "2026973");//fs_collection_id
-        treatedData.set(23, "12-0496");//ppq_id
-        treatedData.set(17, recordArray[0]);//recId -->image_id
-        treatedData.set(1, recordArray[1]);//url -->bg_url
+        treatedData.set(23, "12-0496");//fs_ppq_id
+        treatedData.set(17, recordArray[0]);//recId -->ext_image_id
+        treatedData.set(1, recordArray[1]);//url -->ext_url
         this.famNames = recordArray[2];
         this.gnNames = recordArray[3];
-        treatedData.set(35, recordArray[4]);//mdnNames --> pr_name_maiden
-        treatedData.set(36, recordArray[5]);//pre --> pr_name_prefix
-        treatedData.set(37, recordArray[6]);//suf --> pr_name_suffix
-        this.birYear = recordArray[7];
-        this.birDay = recordArray[8];
-        this.birMonth = recordArray[9];
-        this.deaYear = recordArray[10];
-        this.deaDay = recordArray[11];
-        this.deaMonth = recordArray[12];
-        this.marMonth = recordArray[13];
-        this.marYear = recordArray[14];
-        this.marDay = recordArray[15];
-        treatedData.set(9, recordArray[16]);//created_timestamp
-        treatedData.set(43, recordArray[17]);//updated_timestamp
-        treatedData.set(7, recordArray[18]);//cemName --> cemetery_name
-        this.cemCity = recordArray[19];
-        this.cemState = recordArray[20];
-        this.cemCounty = recordArray[21];
-        this.cemCountry = recordArray[22];
-        treatedData.set(5, recordArray[23]);//cemLatitude -->cemetery_latitude
-        treatedData.set(12, recordArray[23]);//cemLatitude -->event_place_latitude
-        treatedData.set(6, recordArray[24]);//cemLongitude -->cemetery_longitude        
-        treatedData.set(13, recordArray[24]);//cemLongitude -->event_place_longitude 
-        treatedData.set(0, recordArray[25]);//thumb --> bg_thumbnail_url
+        treatedData.set(35, recordArray[4]);//mdnNames --> pr_name_maid
+        treatedData.set(36, recordArray[5]);//pre --> pr_name_pre
+        treatedData.set(37, recordArray[6]);//suf --> pr_name_suf
+        this.birYear = recordArray[7];//pr_bir_year
+        this.birDay = recordArray[8];//pr_bir_day
+        this.birMonth = recordArray[9];//pr_bir_month
+        this.deaYear = recordArray[10];//pr_dea_year
+        this.deaDay = recordArray[11];//pr_dea_day
+        this.deaMonth = recordArray[12];//pr_dea_month
+        this.marMonth = recordArray[13];//pr_mar_month
+        this.marYear = recordArray[14];//pr_mar_year
+        this.marDay = recordArray[15];//pr_mar_day
+   
+        treatedData.set(9, recordArray[16]);//ext_create_date
+        treatedData.set(43, recordArray[17]);//ext_update_date
+        //location of is_restricted field from bg index 18
+        //location of redirect_id field from bg index 19
+        treatedData.set(7, recordArray[20]);//cemName --> event_cemetery changed from 18
+        this.cemCity = recordArray[21];//event_city changed from 19
+        this.cemState = recordArray[22];//event_state changed from 20
+        this.cemCounty = recordArray[23];//event_county changed from 21
+        this.cemCountry = recordArray[24];//event_country changed from 22
+        treatedData.set(5, recordArray[25]);//cemLatitude -->cemetery_latitude changed from 23
+        treatedData.set(12, recordArray[25]);//cemLatitude -->event_place_lat changed from 23
+        treatedData.set(6, recordArray[26]);//cemLongitude -->cemetery_longitude changed from 24        
+        treatedData.set(13, recordArray[26]);//cemLongitude -->event_place_lon changed from 24
+        treatedData.set(0, recordArray[27]);//thumb --> bg_thumbnail_url changed from 25
 
         this.systemTimeStamp = timeStamp;
 

@@ -75,10 +75,10 @@ public class TextFileReader {
 
             if (count < rowCount + 1) {
                 fieldData = sCurrentLine.split(tabSplitBy);
-                olData = FXCollections.observableArrayList(Arrays.asList(fieldData));
+                olData = FXCollections.observableArrayList(Arrays.asList(fieldData));               
                 recordDataList.add(olData);
-
-                for (String fieldData1 : fieldData) {
+                
+                 for (String fieldData1 : fieldData) {
                 }
             }
 
